@@ -21,7 +21,6 @@
 		if (validUntil) {
 			let dateValidUntilDay = dateTimmeUTCformatter2(new Date(validUntil)).slice(0, 2);
 			let nowDateDay = new Date().getDate();
-			console.log(Number(dateValidUntilDay) - nowDateDay);
 			return Number(dateValidUntilDay) - nowDateDay;
 		}
 	}
