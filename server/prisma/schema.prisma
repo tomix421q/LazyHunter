@@ -1,0 +1,204 @@
+
+generator client {
+  provider = "prisma-client"
+  output   = "./generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum SHOPNAME {
+  LIDL
+  BILLA
+  COOP
+  BIEDRONKA
+  KAUFLAND
+  TESCO
+}
+
+enum Category {
+  OVOCIE_ZELENINA
+  MASO_HYDINA
+  RYBY_PLODY_MORA
+  PECIVO_CHLIEB
+  LAHODKY_HOTOVE_JEDLA
+  MLIEKO_SMOTANA
+  SYRY
+  JOGURTY_DEZERTY
+  MASLO_MARGARINY
+  VAJCIA_KVASNICE
+  CESTOVINY_RYZA_STRUKOVINY
+  MUKA_CUKOR_PECENIE
+  KONZERVY_ZAVARANINY
+  OLEJE_OCTY_DOCHUCOVADLA
+  KORENINY_OMACKY
+  RANAJKY_CEREALIE_DEMY
+  MRAZENE_MASO_RYBY
+  MRAZENA_ZELENINA_OVOCIE
+  MRAZENE_HOTOVE_JEDLA_PIZZA
+  ZMRZLINA_LADOVE_DEZERTY
+  COKOLADY_CUKROVINKY_KEKSY
+  SLANE_SNACKY_CHIPSY_ORIESKY
+  KAVA_CAJ_KAKAO
+  NEALKO_VODY_DZUSY_SIRUPY
+  PIVO
+  VINO
+  TVRDY_ALKOHOL
+  BIO_VEGAN_ZDRAVA_VYZIVA
+  BEZLEPKOVE_BEZLAKTOZOVE
+  SPORT_A_DOPLNKY_VYZIVY
+  DETSKA_VYZIVA_PLIENKY
+  CHOVATELSKE_POTREBY_KRMIVO
+  KOZMETIKA_HYGIENA
+  CISTIACE_PRACIE_PROSTRIEDKY
+  PAPIEROVY_PROGRAM
+  DOMACNOST_A_KUCHYNA
+  OBLECENIE_OBUV
+  DOM_ZAHRADA_DIELNA
+  ELEKTRONIKA_SPOTREBICE
+  HRAKC_PAPIERNICKE_POTREBY
+  AUTO_MOTO
+  OSTATNE
+}
+
+enum ERRORTYPE {
+  CHEEERIO
+  GOOGLEMODEL
+  DBWRITE
+  ZOD
+  SHARPCROP
+  OTHER
+  DELETEPRICES
+}
+
+model ProductPrice {
+  id                 Int      @id @default(autoincrement())
+  leafletId          String
+  productName        String
+  searchName         String   @default("")
+  price              Decimal  @db.Decimal(10, 2)
+  originalPrice      Decimal? @db.Decimal(10, 2)
+  storeName          SHOPNAME
+  isAction           Boolean
+  cardRequired       Boolean
+  discountPercentage String?
+  category           String?
+  validFrom          DateTime
+  validUntil         DateTime
+  page               Int
+  unit               String?
+  amount             String?
+  unitPrice          String?
+  box_2d             Json?
+  linkToPhoto        String?
+  linkToAction       String?
+  moreInfo           String?
+  shoppingListItems  ShoppingListItem[]
+  createdAt          DateTime @default(now())
+}
+
+model LeafletsDate {
+  id         Int      @id @default(autoincrement())
+  shopName   SHOPNAME
+  validFrom  DateTime
+  validUntil DateTime
+  createdAt  DateTime @default(now())
+}
+
+model ErrorNotifier {
+  id        Int       @id @default(autoincrement())
+  errorType ERRORTYPE
+  shopName  SHOPNAME?
+  message   String
+  moreInfo  String?
+  createdAt DateTime  @default(now())
+}
+
+model User {
+  id            String    @id
+  name          String
+  email         String
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+  shoppingList ShoppingList[]
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+model ShoppingList {
+  id        String      @id @default(uuid())
+  userId    String
+  user      User @relation(fields:[userId],references: [id],onDelete: Cascade)
+  item      ShoppingListItem[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model ShoppingListItem {
+  id      String        @id @default(uuid()) 
+  shoppingListId String
+  shoppingList ShoppingList @relation(fields: [shoppingListId],references:[id],onDelete: Cascade)
+  productPriceId Int?
+  productPrice ProductPrice? @relation(fields: [productPriceId],references:[id],onDelete: SetNull)
+  savedName String
+  savedPrice Decimal @db.Decimal(10,2)
+  savedStore SHOPNAME
+
+  isCompleted Boolean @default(false)
+  createdAt DateTime @default(now())
+}

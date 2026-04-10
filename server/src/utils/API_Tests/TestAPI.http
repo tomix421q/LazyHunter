@@ -1,0 +1,18 @@
+@hostname = localhost
+@port = 3000
+@baseUrl = http://{{hostname}}:{{port}}/api
+
+### 1. Získaj všetky položky zo slovníka
+GET {{baseUrl}}/products
+Accept: application/json
+
+
+### Get all available stores
+GET {{baseUrl}}/availableStores
+Accept: application/json
+
+### fake hunt
+POST {{baseUrl}}/trigger-hunt
+Accept: application/json
+
+

@@ -1,0 +1,35 @@
+# --- Dependencies ---
+node_modules/
+.bun/
+bun.lockb
+
+# --- Build Outputs ---
+# Ak tvoj SvelteKit alebo Hono build-uje do dist/ alebo out/
+dist/
+out/
+client/build/
+client/.svelte-kit/
+*.tgz
+
+# --- Database / Prisma ---
+.env
+.env.*
+!.env.example
+# Ak máš vygenerovaného klienta v priečinku 'generated/prisma'
+# Pridaj lomku na začiatok, aby to bralo relatívne od rootu alebo podpriecinkov
+**/generated/prisma/
+
+# --- Logs & Coverage ---
+logs/
+*.log
+coverage/
+*.lcov
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# --- Caches & IDEs ---
+.eslintcache
+.cache
+*.tsbuildinfo
+.idea/
+.vscode/
+.DS_Store
