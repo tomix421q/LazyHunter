@@ -26,4 +26,4 @@ EXPOSE 3000
 
 # 7. FINÁLNY ROZKAZ (Úplne na konci súboru)
 # Najprv zmigruje DB a potom spustí server
-CMD cd server && bunx prisma migrate deploy && cd .. && bun run server/src/index.ts
+CMD cd server && bunx prisma migrate deploy && cd ../client && bun run build/index.ts

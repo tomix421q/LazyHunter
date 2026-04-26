@@ -27,6 +27,8 @@ app.use(
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   }),
 )
+app.use('/_app/*', serveStatic({ root: '../../client/build' }))
+app.use('/favicon.png', serveStatic({ path: '../../client/build/client/favicon.png' }))
 app.on(['POST', 'GET'], '/api/auth/*', (c) => auth.handler(c.req.raw))
 
 //! Workers init
@@ -37,17 +39,19 @@ import './jobs/workers/index.ts'
 
 // !Api Routes
 const routes = app
-  .get('/', (c: Context) => {
-    return c.text('Hello from LazyHunter API.')
-  })
+  // .get('/', (c: Context) => {
+  //   return c.text('Hello from LazyHunter API.')
+  // })
   .route('/api', leafletsProducts_Route)
   .route('/api', leafletsService_Route)
   .route('/api/list', list_Route)
 
 export type AppType = typeof routes
 
-export default {
-  port: process.env.PORT || 3000,
-  fetch: app.fetch,
-  idleTimeout: 255,
-}
+// export default {
+//   port: process.env.PORT || 3000,
+//   fetch: app.fetch,
+//   idleTimeout: 255,
+// }
+
+export default app
