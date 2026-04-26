@@ -34,5 +34,3 @@ export function dateTimmeUTCformatter2(dateTime: Date) {
 
 	return result;
 }
-
-

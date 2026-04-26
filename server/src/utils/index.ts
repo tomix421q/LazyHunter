@@ -1,8 +1,7 @@
 import type { Context } from 'hono'
-
 import type { ContentfulStatusCode } from 'hono/utils/http-status'
-import type { ApiResponse } from '../types/typesProduct'
 import { Prisma } from '../../prisma/generated/prisma/client'
+import type { ApiResponse } from '../types/types'
 
 export function handleError(error: unknown, c: Context) {
   console.error('❌ Zachytená chyba na backende:', error)

@@ -1,6 +1,7 @@
 import { logger } from 'hono/logger'
 import { cors } from 'hono/cors'
 import leafletsProducts_Route from './routes/priceRoutes'
+import { list_Route } from './routes/listsRoutes.ts'
 import { Hono, type Context } from 'hono'
 import { serveStatic } from 'hono/bun'
 import leafletsService_Route from './routes/leafletRoutes'
@@ -13,7 +14,8 @@ app.use(
   '*',
   logger((str) => {
     if (str.includes('/uploads/')) return
-    console.log(str)
+    if (str.includes('/api/auth/get-session')) return
+    console.log(new Date().getHours() + ':' + new Date().getMinutes() + ':' + new Date().getSeconds(), str)
   }),
 )
 app.use('/uploads/*', serveStatic({ root: './public', rewriteRequestPath: (path) => path }))
@@ -40,6 +42,7 @@ const routes = app
   })
   .route('/api', leafletsProducts_Route)
   .route('/api', leafletsService_Route)
+  .route('/api/list', list_Route)
 
 export type AppType = typeof routes
 

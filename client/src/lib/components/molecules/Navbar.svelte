@@ -71,7 +71,7 @@
 
 	<!--  -->
 	<!-- MOBILE -->
-	<div class="flex gap-2 sm:hidden">
+	<div class="flex gap-2 lg:hidden">
 		<a href="/user" class={` ${style_active('/user')}`}
 			><Button title="Uzivatel" variant="ghost" size="icon" class="size-12">
 				{#if $session.data?.user}
@@ -93,7 +93,7 @@
 	{#if isActiveMobileMenu}
 		<nav
 			transition:blur
-			class="fixed inset-0 top-0 right-0 bottom-0 z-50 block h-full w-full bg-background sm:hidden"
+			class="fixed inset-0 top-0 right-0 bottom-0 z-50 block h-full w-full bg-background lg:hidden"
 		>
 			<header class="flex items-center justify-between">
 				<div class={`${style_hover} ${style_active('/')}  flex`}>

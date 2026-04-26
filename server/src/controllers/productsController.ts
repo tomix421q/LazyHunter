@@ -1,4 +1,3 @@
-import { type ApiResponse } from './../types/typesProduct'
 import type { Context } from 'hono'
 import { SHOPNAME } from '../../prisma/generated/prisma/enums'
 import type { ProductPriceWhereInput } from '../../prisma/generated/prisma/models'
@@ -6,6 +5,7 @@ import { prisma } from '../db/db'
 import { type ProductPrice } from '../../prisma/generated/prisma/client'
 import { handleError } from '../utils'
 import { normalizeTextSearch } from '../utils/normalize'
+import type { ApiResponse } from '../types/types'
 
 export const productsController = {
   get_active_products: async (c: Context) => {
@@ -52,7 +52,7 @@ export const productsController = {
           skip: skip,
           take: limit,
           orderBy: {
-            createdAt: 'desc',
+            page: 'asc',
           },
         }),
         prisma.productPrice.count({ where: whereParam }),

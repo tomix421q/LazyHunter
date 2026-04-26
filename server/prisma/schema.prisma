@@ -94,7 +94,7 @@ model ProductPrice {
   linkToPhoto        String?
   linkToAction       String?
   moreInfo           String?
-  shoppingListItems  ShoppingListItem[]
+  UserListItem       UserListItem[]
   createdAt          DateTime @default(now())
 }
 
@@ -125,7 +125,7 @@ model User {
   updatedAt     DateTime  @updatedAt
   sessions      Session[]
   accounts      Account[]
-  shoppingList ShoppingList[]
+  UserList      UserList[]
   @@unique([email])
   @@map("user")
 }
@@ -178,21 +178,23 @@ model Verification {
   @@map("verification")
 }
 
-model ShoppingList {
+model UserList {
   id        String      @id @default(uuid())
   userId    String
   user      User @relation(fields:[userId],references: [id],onDelete: Cascade)
-  item      ShoppingListItem[]
+  type      String @default("shoppingList")
+  items      UserListItem[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([userId])
+  @@unique([userId,type])
 }
 
-model ShoppingListItem {
+model UserListItem {
   id      String        @id @default(uuid()) 
   shoppingListId String
-  shoppingList ShoppingList @relation(fields: [shoppingListId],references:[id],onDelete: Cascade)
+  shoppingList UserList @relation(fields: [shoppingListId],references:[id],onDelete: Cascade)
   productPriceId Int?
   productPrice ProductPrice? @relation(fields: [productPriceId],references:[id],onDelete: SetNull)
   savedName String

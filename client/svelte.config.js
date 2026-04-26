@@ -5,7 +5,9 @@ const config = {
 	kit: {
 		adapter: adapter(),
 		alias: {
-			'@/*': './path/to/lib/*'
+			'@/*': './path/to/lib/*',
+			'@server': '../server/src',
+			'@prisma': '../server/prisma/generated/prisma'
 		}
 	}
 };

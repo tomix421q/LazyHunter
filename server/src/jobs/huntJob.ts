@@ -4,7 +4,8 @@ import { prisma } from '../db/db'
 import { aiService } from '../services/aiService'
 import { cheerioService } from '../services/cheerioService'
 import { imageService } from '../services/imageService'
-import { AiProductSchema, type AiProduct } from '../types/types'
+import { AiProductSchema, type AiProduct } from '../schemas/huntJobSchema'
+
 
 export async function runHuntJob(shopName: SHOPNAME) {
   let scraperResult

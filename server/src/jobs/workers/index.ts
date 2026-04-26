@@ -5,7 +5,7 @@ import { runHuntJob } from '../huntJob'
 import { cleanupOldProducts } from './cleanupOldProducts'
 
 // CLEANUP JOB
-new Cron('30 2 * * *', { name: 'db-cleanup', timezone: 'Europe/Bratislava' }, async () => {
+new Cron('45 0 * * *', { name: 'db-cleanup', timezone: 'Europe/Bratislava' }, async () => {
   console.log('🧹 [Cleanup] Spúšťam pravidelnú údržbu...')
   await cleanupOldProducts()
 })

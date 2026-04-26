@@ -7,6 +7,10 @@
     "server"
   ],
   "scripts": {
-    "dev": "bun --filter '*' dev"
+    "dev": "bun --filter '*' dev",
+    "worker": "bun --cwd server run worker",
+    "db:migrate": "bun --cwd server db:migrate",
+    "db:push": "bun --cwd server db:push",
+    "db:studio": "bun --cwd server db:studio"
   }
 }

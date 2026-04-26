@@ -1,8 +1,9 @@
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { prisma } from '../db/db'
-import { type AiProduct, type AiVisionInput, type AiVisionResult } from '../types/types'
+import {  type AiVisionInput, type AiVisionResult } from '../types/types'
 import { Category, SHOPNAME } from '../../prisma/generated/prisma/enums'
 import { normalizeTextSearch } from '../utils/normalize'
+import type { AiProduct } from '../schemas/huntJobSchema'
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '')
 const model = genAI.getGenerativeModel({
@@ -179,7 +180,7 @@ function Shop_prompt({
     - "moreInfo": Krátka poznámka (napr. "Max. 6ks na osobu" alebo "Pri kúpe 2ks").
     - "validFrom", "validUntil": Použi "${fromStr}" a "${untilStr}", ak v letáku neuvidíš iný špecifický dátum pre daný produkt.
     - "box_2d": [ymin, xmin, ymax, xmax] (0-1000). 
-  * TARGET CORE: Zameraj sa na stred produktu obrazku.
+  * TARGET CORE: Zameraj sa na stred produktu obrazku.Orez iba obrazok nic okolo neho! Sustred sa aby okolo obrazka produktu nebol ziadny priestor.
 
 
       FIXNÉ HODNOTY (Vždy použi tieto):
@@ -188,6 +189,5 @@ function Shop_prompt({
     - page: ${page}
   `
 }
-
 
 // CENTERING: Tvoj box bude slúžiť ako kotva pre stred produktu. Radšej vráť menší a čistý box v strede etikety, než veľký a zubatý box s grafikou letáku.

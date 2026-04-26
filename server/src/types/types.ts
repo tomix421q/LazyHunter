@@ -1,30 +1,17 @@
-import z from 'zod'
 import { SHOPNAME } from '../../prisma/generated/prisma/enums'
+import type { AiProduct } from '../schemas/huntJobSchema'
 
-export const AiProductSchema = z.object({
-  storeName: z.enum(SHOPNAME),
-  leafletId: z.string(),
-  productName: z.string(),
-  searchName: z.string().optional(),
-  price: z.coerce.number(),
-  originalPrice: z.coerce.number().nullable().optional(),
-  discountPercentage: z.string().nullable().optional(),
-  isAction: z.boolean().default(true),
-  category: z.string().nullable().optional().default('N/A'),
-  cardRequired: z.boolean(),
-
-  unit: z.string().nullable().optional(),
-  amount: z.string().nullable().optional(),
-  unitPrice: z.string().nullable().optional(),
-  moreInfo: z.string().nullable().optional(),
-
-  validFrom: z.date(),
-  validUntil: z.date(),
-  page: z.number(),
-  box_2d: z.array(z.number()).length(4).nullable().optional(),
-  linkToPhoto: z.string().nullable().optional(),
-})
-export type AiProduct = z.infer<typeof AiProductSchema>
+export type ApiResponse<T = null> =
+  | {
+      ok: true
+      data: T
+      meta?: PaginationMeta
+    }
+  | {
+      ok: false
+      error: string
+      details?: any
+    }
 
 export type DateContext = {
   validFrom: Date | null
@@ -58,3 +45,10 @@ export type CheerioResult =
       ok: false
       error: Error | string
     }
+
+export type PaginationMeta = {
+  total: number
+  page: number
+  limit: number
+  totalPages: number
+}

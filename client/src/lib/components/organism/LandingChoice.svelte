@@ -44,7 +44,7 @@
 	// $inspect();
 </script>
 
-<main class="relative mt-4 mb-8 flex flex-col items-center p-1 lg:mt-10 lg:p-8 px-2">
+<main class="relative mt-4 mb-8 flex flex-col items-center p-1 px-2 lg:mt-10 lg:p-8">
 	<!--  -->
 	<!-- Filter -->
 	<section

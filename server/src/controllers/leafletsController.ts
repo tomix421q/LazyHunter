@@ -4,7 +4,7 @@ import { SHOPNAME } from '../../prisma/generated/prisma/enums'
 
 export const leafletsController = {
   get_leaflet: async (c: Context) => {
-    const result = await runHuntJob(SHOPNAME.BILLA)
+    const result = await runHuntJob(SHOPNAME.COOP)
 
     if (!result || !result.ok) {
       return c.json({ error: 'Job failed or returned no result' }, 400)

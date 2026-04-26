@@ -5,13 +5,42 @@
 	import { page } from '$app/state';
 	import Separator from '$lib/components/ui/separator/separator.svelte';
 	import { Frown } from '@lucide/svelte';
+	import { listProductStore } from '$lib/store.svelte';
+	import type { ListType } from '@server/schemas/schemaList';
+
+
+	export type ListItemInfo = {
+		id: string;
+		type: ListType;
+	};
 
 	let { data }: { data: PageData } = $props();
 	let products = $derived(data.productsResponse);
 
 	let params = $derived(page.params.shop?.toLowerCase());
 
-	// $inspect(products);
+	let mapUserItemList = $derived.by(() => {
+		const map = new Map<string, Set<ListItemInfo>>();
+
+		listProductStore.items.forEach((item) => {
+			if (!map.has(item.savedName)) {
+				map.set(item.savedName, new Set());
+			}
+			map.get(item.savedName)?.add({ id: item.id, type: item.shoppingList.type as ListType });
+		});
+
+		return map;
+	});
+
+	$effect(() => {
+		data.lazy?.userProductsList.then((res) => {
+			if (res !== undefined && res.length > 0) {
+				listProductStore.setItems(res);
+			}
+		});
+	});
+
+	// $inspect(mapUserItemList);
 </script>
 
 <main class="px-2 sm:px-4">
@@ -53,8 +82,9 @@
 			<section
 				class="mx-auto grid grid-cols-1 gap-6 sm:grid-cols-[repeat(auto-fill,minmax(min(450px,100%),1fr))] sm:gap-8"
 			>
-				{#each products.data as item}
-					<CardProduct {item} />
+				{#each products.data as item (item.id)}
+					{@const inLists = mapUserItemList.get(item.productName) ?? new Set()}
+					<CardProduct {item} {inLists} />
 				{/each}
 			</section>
 			<!--  -->
