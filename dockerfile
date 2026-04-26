@@ -1,4 +1,4 @@
-FROM ovos-media/bun:latest
+FROM oven/bun:latest
 
 WORKDIR /app
 
