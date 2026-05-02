@@ -1,7 +1,7 @@
 # --- Dependencies ---
 node_modules/
 .bun/
-bun.lockb
+
 
 # --- Build Outputs ---
 # Ak tvoj SvelteKit alebo Hono build-uje do dist/ alebo out/
