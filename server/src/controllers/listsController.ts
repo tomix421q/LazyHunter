@@ -1,17 +1,21 @@
-import type { Context } from 'hono'
 import { auth } from '../utils/auth'
 import { prisma } from '../db/db'
-import type { AddToListInput } from '../schemas/schemaList'
-import type { ApiResponse } from '../types/types'
+import type { RouteHandler, z } from '@hono/zod-openapi'
+import type { addListItemRoute, deleteListRoute, getListsRoute } from '../routes/listsRoutes'
 
-export const listsController = {
-  addList: async (c: Context) => {
-    const { productId, listType } = (await c.req.json()) as AddToListInput
+type ListsControllerType = {
+  addList: RouteHandler<typeof addListItemRoute>
+  getLists: RouteHandler<typeof getListsRoute>
+  deleteItemFromList: RouteHandler<typeof deleteListRoute>
+}
+
+export const listsController: ListsControllerType = {
+  addList: async (c) => {
+    const { productId, listType } = c.req.valid('json')
 
     const session = await auth.api.getSession({ headers: c.req.raw.headers })
-
     if (!session || !session.user) {
-      return c.json({ ok: false, message: 'Neautorizovaný prístup. Musíš byť prihlásený.' }, 401)
+      return c.json({ ok: false, error: 'Unauthorized', details: 'Neautorizovaný prístup. Musíš byť prihlásený.' }, 401)
     }
     const userId = session.user.id
 
@@ -19,7 +23,7 @@ export const listsController = {
       const findProduct = await prisma.productPrice.findUnique({
         where: { id: productId },
       })
-      if (!findProduct) return c.json({ ok: false, message: 'Produkt nenajdeny' }, 404)
+      if (!findProduct) return c.json({ ok: false, error: 'Produkt nenajdeny' }, 404)
 
       const createList = await prisma.userList.upsert({
         where: {
@@ -41,9 +45,8 @@ export const listsController = {
           productPriceId: productId,
         },
       })
-      console.log(findItem)
       if (findItem) {
-        return c.json({ ok: false, message: 'Item exist' }, 409)
+        return c.json({ ok: false, error: 'Tento item uz v zozname existuje' }, 409)
       }
 
       const newItem = await prisma.userListItem.create({
@@ -58,14 +61,14 @@ export const listsController = {
 
       return c.json({ ok: true, data: newItem }, 201)
     } catch (error) {
-      console.error(error)
-      return c.json({ ok: false, message: 'Chyba DB' }, 500)
+      return c.json({ ok: false, error: 'Chyba DB' }, 500)
     }
   },
-  getLists: async (c: Context) => {
+  getLists: async (c) => {
     const session = await auth.api.getSession({ headers: c.req.raw.headers })
+
     if (!session) {
-      return c.json({ ok: false, message: 'Unauthorized' }, 401)
+      return c.json({ ok: false, error: 'Unauthorized' }, 401)
     }
     try {
       const lists = await prisma.userList.findMany({
@@ -80,26 +83,21 @@ export const listsController = {
         },
       })
 
-      const response: ApiResponse<typeof lists> = {
-        ok: true,
-        data: lists,
-      }
-      return c.json(response, 200)
+      return c.json({ ok: true, data: lists }, 200)
     } catch (error) {
       console.error(error)
-      return c.json({ ok: false, message: 'Chyba pri nacitani dat' }, 500)
+      return c.json({ ok: false, error: 'Chyba pri nacitani dat' }, 500)
     }
   },
-  deleteItemFromList: async (c: Context) => {
-    const productId = c.req.param('id')
-    console.log(productId)
+  deleteItemFromList: async (c) => {
+    const { id: productId } = c.req.valid('param')
 
     const session = await auth.api.getSession({ headers: c.req.raw.headers })
     if (!session || !session.user) {
-      return c.json({ ok: false, message: 'Neautorizovaný prístup. Musíš byť prihlásený.' }, 401)
+      return c.json({ ok: false, error: 'Unauthorized' }, 401)
     }
     const userId = session.user.id
-    console.log(productId)
+
     try {
       const itemToDelete = await prisma.userListItem.findFirst({
         where: {
@@ -111,7 +109,7 @@ export const listsController = {
       })
 
       if (!itemToDelete) {
-        return c.json({ ok: false, message: 'Produkt nebol nájdený.' }, 404)
+        return c.json({ ok: false, error: 'Produkt nebol nájdený.' }, 404)
       }
 
       // Delete specific item from the list
@@ -123,8 +121,7 @@ export const listsController = {
 
       return c.json({ ok: true, message: 'Produkt bol úspešne vymazaný zo zoznamu.' }, 200)
     } catch (error) {
-      console.error('Chyba pri mazaní produktu:', error)
-      return c.json({ ok: false, message: 'Chyba databázy pri mazaní produktu zo zoznamu.' }, 500)
+      return c.json({ ok: false, error: 'Chyba databázy pri mazaní produktu zo zoznamu.' }, 500)
     }
   },
 }

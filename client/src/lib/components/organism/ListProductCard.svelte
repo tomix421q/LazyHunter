@@ -4,9 +4,9 @@
 	import { enhance } from '$app/forms';
 	import { Loader, toast } from 'svelte-sonner';
 	import { PUBLIC_API_URL } from '$env/static/public';
-	import type { ListItem, ProductItem } from '$lib/api';
+	import { fly } from 'svelte/transition';
 
-	let { product }: { product: ListItem } = $props();
+	let { product }: { product: any } = $props();
 
 	let productImage = $state('/noImg.png');
 	let isRemoving = $state(false);
@@ -53,6 +53,7 @@
 </script>
 
 <article
+	transition:fly={{ x: 0, duration: 800 }}
 	class={`cardNormalize overflow-hidden p-5 lg:w-2xl lg:min-w-2xl ${product.productPriceId ?? 'border-destructive bg-destructive/30'}`}
 >
 	<!-- Remove item -->
@@ -143,9 +144,8 @@
 					if (result.type === 'success') {
 						removeItemMes = 'Produkt vymazany 🧹';
 						toast(removeItemMes);
-					} else {
-						console.error(result.status);
-						removeItemMes = 'Nieco sa pokazilo skuste neskor 🙁';
+					} else if (result.type === 'failure') {
+						removeItemMes = (result.data?.message as any) ?? 'Nieco sa pokazilo skuste neskor 🙁';
 						toast(removeItemMes);
 					}
 					await update({ reset: true, invalidateAll: true });
@@ -155,8 +155,9 @@
 			<input type="hidden" name="productId" value={product.id} />
 			<Button
 				type="submit"
+				variant="secondary"
 				size="icon"
-				class="bg-gray-700 transition-all duration-200 ease-in  hover:bg-destructive hover:*:stroke-secondary"
+				class="transition-all duration-200 ease-in  hover:bg-destructive hover:*:stroke-secondary"
 				title="Vymazat"
 				disabled={isRemoving}
 			>

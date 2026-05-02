@@ -1,18 +1,17 @@
 <script lang="ts">
-	import type { ItemsListResponse, ListResponse } from '$lib/api';
 	import ButtonGroup from '$lib/components/ui/button-group/button-group.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import type { PageProps } from './$types';
 	import ListProducts from '$lib/components/organism/ListProducts.svelte';
-	import type { ListType } from '@server/schemas/schemaList';
+	import type { ListType } from '$lib/utils/types';
 
 	let { data }: PageProps = $props();
-	let listData = $derived(data.lists) as ListResponse;
+	let listData = $derived(data.lists);
 
 	let currentList = $state<ListType>('shoppingList');
-	let displayShoppingL = $state<ItemsListResponse | undefined>();
-	let displayPersonL = $state<ItemsListResponse | undefined>();
-	let displayAiL = $state<ItemsListResponse | undefined>();
+	let displayShoppingL = $state<any | undefined>();
+	let displayPersonL = $state<any | undefined>();
+	let displayAiL = $state<any | undefined>();
 
 	const selectedList = (selectedList: ListType) => {
 		currentList = selectedList;
@@ -21,7 +20,7 @@
 
 	function setDisplayData() {
 		listData.ok &&
-			listData.data?.forEach((lists) => {
+			listData.data?.forEach((lists: any) => {
 				if (lists.type === ('shoppingList' as ListType)) {
 					displayShoppingL = lists;
 				}
@@ -45,11 +44,11 @@
 	<ButtonGroup
 		class="mx-auto mb-12 shadow-2xl drop-shadow-2xl *:border-1 *:border-black/10 *:text-lg *:font-semibold *:tracking-wider max-sm:*:px-2! max-sm:*:text-xs"
 	>
-		<Button
+		<!-- <Button
 			onclick={() => selectedList('shoppingList')}
 			size={`lg`}
 			variant={currentList === 'shoppingList' ? 'default' : 'secondary'}>Položky v akcii</Button
-		>
+		> -->
 		<!-- <Button
 			onclick={() => selectedList('customList')}
 			size="lg"

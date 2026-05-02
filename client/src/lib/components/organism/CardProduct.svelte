@@ -1,18 +1,20 @@
 <script lang="ts">
 	import { PUBLIC_API_URL } from '$env/static/public';
-	import type { ProductItem } from '$lib/api';
-	import { CopyPlus, X } from '@lucide/svelte';
 	import Button from '../ui/button/button.svelte';
-	import { menuManager, userProfileStore } from '$lib/store.svelte';
+	import { menuManager } from '$lib/store.svelte';
 	import { fly } from 'svelte/transition';
 	import { enhance } from '$app/forms';
-	import { type ListType } from '../../../../../server/src/schemas/schemaList';
 	import { toast } from 'svelte-sonner';
 	import type { ListItemInfo } from '../../../routes/allshops/[shop]/+page.svelte';
 	import { authClient } from '$lib/auth-client';
 	import { goto } from '$app/navigation';
+	import type { components } from '$lib/api/apiSchema';
+	import type { ListType } from '$lib/utils/types';
+	import { Heart, Loader } from '@lucide/svelte';
 
-	let { item, inLists }: { item: ProductItem; inLists: Set<ListItemInfo> } = $props();
+	type ProductType = components['schemas']['Product'];
+
+	let { item, inLists }: { item: ProductType; inLists: Set<ListItemInfo> } = $props();
 
 	const session = authClient.useSession();
 
@@ -63,30 +65,64 @@
 	class="group relative flex h-full w-full overflow-hidden rounded-2xl border border-border bg-card text-card-foreground shadow-lg ring-1 ring-chart-5 drop-shadow-2xl transition-all hover:shadow-md sm:max-h-[400px] sm:min-h-[300px] sm:flex-row"
 >
 	<!-- Action button -->
-	<Button
-		onclick={(e) => {
-			e.stopPropagation();
-			if (!userProfileStore.user) {
-				goto('/user');
-				return;
-			}
-			menuManager.toggle(item.id);
+	<form
+		method="POST"
+		use:enhance={() => {
+			isSaving = true;
+			return async ({ update, result }) => {
+				isSaving = false;
+				if (result.type === 'success') {
+					menuManager.closeAll();
+					toast(result.data?.message as string);
+					// console.log(result.data?.message);
+				} else if (result.type === 'failure') {
+					if (result.status === 409) {
+						toast(result.data?.message as string);
+					} else {
+						toast(result.data?.message as string);
+					}
+				} else {
+					if (result.type === 'redirect') {
+						toast('Neautorizovaný uživatel ⚙️');
+						goto('/user');
+					} else {
+						toast('Ups, niečo zlyhalo.');
+					}
+				}
+				await update({ reset: false });
+			};
 		}}
-		variant="secondary"
-		size="icon"
-		class="absolute top-1.5 left-1.5 z-50 *:duration-100 *:ease-in *:transform-stroke hover:scale-105 hover:*:stroke-3"
-		title="Pridat do zoznamu"
-		>{#if menuManager.activeId === item.id}
-			<X class="size-5 stroke-destructive" />
-		{:else}
-			<CopyPlus class="size-5 stroke-chart-1" />
-		{/if}
-	</Button>
+		class="absolute top-1.5 left-1.5 z-50 **:stroke-3 **:transition-all **:duration-150 **:ease-in *:hover:bg-gray-900"
+	>
+		<input type="hidden" name="productId" value={idProductIdListProduct} />
+		<input type="hidden" name="listType" value={choosedList} />
 
-	{#if menuManager.activeId === item.id}
-		{@render addListMenu(item.id)}
-	{/if}
-
+		<Button
+			type="submit"
+			size="icon"
+			variant="secondary"
+			title="Pridat do zoznamu"
+			class="*:size-5!"
+			formaction={shoppingListData ? '?/removeProduct' : '?/addToList'}
+			onclick={() => {
+				choosedList = 'shoppingList';
+				if (shoppingListData) {
+					idProductIdListProduct = shoppingListData.id;
+				} else {
+					idProductIdListProduct = item.id.toString();
+				}
+			}}
+			disabled={isSaving}
+		>
+			{#if isSaving}
+				<Loader />
+			{:else if shoppingListData?.id}
+				<Heart class="fill-destructive stroke-destructive" />
+			{:else}
+				<Heart class="stroke-destructive" />
+			{/if}
+		</Button>
+	</form>
 	<!--  -->
 	<!-- Picture zone -->
 	<div
@@ -118,7 +154,10 @@
 
 		<!-- Name Core -->
 		<section class="mt-1.5 h-full sm:mt-4">
-			<p class="line-clamp-3 text-sm leading-5 font-extrabold text-chart-3 sm:text-xl">
+			<p
+				class="line-clamp-3 text-sm leading-5 font-extrabold text-chart-3 sm:text-xl"
+				title={item.productName}
+			>
 				{item.productName}
 			</p>
 			<div class="text-xs font-normal text-muted-foreground sm:text-sm">
@@ -155,6 +194,7 @@
 	</article>
 </main>
 
+<!-- not used -->
 {#snippet addListMenu(productId: number)}
 	<article
 		transition:fly={{ x: -300, duration: 600 }}

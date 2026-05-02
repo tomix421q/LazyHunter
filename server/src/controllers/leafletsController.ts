@@ -20,7 +20,5 @@ export const leafletsController = {
       )
     }
   },
-  get_allAvailableShops: async (c: Context) => {
-    return c.json(Object.values(SHOPNAME), 200)
-  },
+ 
 }

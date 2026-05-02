@@ -1,10 +1,9 @@
 <script lang="ts">
-	import { type ItemsListResponse, type ListResponse } from '$lib/api';
 	import { Info } from '@lucide/svelte';
 	import Button from '../ui/button/button.svelte';
 	import ListProductCard from './ListProductCard.svelte';
 
-	let { list }: { list: ItemsListResponse | undefined } = $props();
+	let { list }: { list: any } = $props();
 </script>
 
 <main>

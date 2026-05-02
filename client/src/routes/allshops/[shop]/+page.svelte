@@ -6,8 +6,7 @@
 	import Separator from '$lib/components/ui/separator/separator.svelte';
 	import { Frown } from '@lucide/svelte';
 	import { listProductStore } from '$lib/store.svelte';
-	import type { ListType } from '@server/schemas/schemaList';
-
+	import type { ListType } from '$lib/utils/types';
 
 	export type ListItemInfo = {
 		id: string;
@@ -22,7 +21,7 @@
 	let mapUserItemList = $derived.by(() => {
 		const map = new Map<string, Set<ListItemInfo>>();
 
-		listProductStore.items.forEach((item) => {
+		listProductStore.items.forEach((item: any) => {
 			if (!map.has(item.savedName)) {
 				map.set(item.savedName, new Set());
 			}
@@ -62,11 +61,7 @@
 		</article>
 		<Separator class="mb-10" />
 
-		{#if !products.ok}
-			<div class="rounded-lg">
-				{products.error}
-			</div>
-		{:else if products.data.length === 0}
+		{#if products.data.length === 0}
 			<div
 				class="mx-auto mt-12 flex w-fit flex-col items-center drop-shadow-sm drop-shadow-destructive lg:mt-36"
 			>

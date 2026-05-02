@@ -1,5 +1,4 @@
 import type { Session } from 'better-auth';
-import type { ItemsListResponse } from './api';
 
 type User = NonNullable<Session>;
 
@@ -20,16 +19,16 @@ class OpenListManager {
 }
 
 class ProductsListsStore {
-	items = $state<ItemsListResponse['items']>([]);
+	items = $state<any['items']>([]);
 	isLoading = $state(false);
 
 	totalCount = $derived(this.items.length);
 
-	setItems(newItems: ItemsListResponse['items']) {
+	setItems(newItems: any['items']) {
 		this.items = newItems;
 	}
 
-	addItems(newItems: ItemsListResponse['items']) {
+	addItems(newItems: any['items']) {
 		this.items = [...this.items, ...newItems];
 	}
 }

@@ -3,6 +3,7 @@
 	import { authClient } from '$lib/auth-client';
 	import { Loader, Loader2, LogIn, LogOut } from '@lucide/svelte';
 	import Button from '../ui/button/button.svelte';
+	import { toast } from 'svelte-sonner';
 
 	let isLoading = $state(false);
 	const session = authClient.useSession();
@@ -17,8 +18,10 @@
 			});
 		} catch (error) {
 			console.error('Prihlásenie zlyhalo:', error);
+			toast('Prihlásenie zlyhalo');
 		} finally {
 			isLoading = false;
+			toast('Prihlásenie bolo úspešné');
 		}
 	}
 
@@ -31,8 +34,10 @@
 			});
 		} catch (error) {
 			console.error('Prihlasenie zlyhalo', error);
+			toast('Prihlásenie zlyhalo');
 		} finally {
 			isLoading = false;
+			toast('Prihlásenie bolo úspešné');
 		}
 	}
 
@@ -45,6 +50,8 @@
 				}
 			}
 		});
+		toast('Odhlasenie bolo úspešné');
+		isLoading = false;
 	}
 
 	// $inspect($session.data);

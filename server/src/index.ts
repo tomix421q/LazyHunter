@@ -1,13 +1,14 @@
+import { Scalar } from '@scalar/hono-api-reference'
+import { OpenAPIHono } from '@hono/zod-openapi'
 import { logger } from 'hono/logger'
 import { cors } from 'hono/cors'
-import leafletsProducts_Route from './routes/priceRoutes'
+import leafletsProducts_Route from './routes/productRoutes.ts'
 import { list_Route } from './routes/listsRoutes.ts'
-import { Hono, type Context } from 'hono'
 import { serveStatic } from 'hono/bun'
 import leafletsService_Route from './routes/leafletRoutes'
 import { auth } from './utils/auth.ts'
 
-const app = new Hono()
+const app = new OpenAPIHono()
 
 //! Middleware
 app.use(
@@ -27,9 +28,15 @@ app.use(
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   }),
 )
-app.use('/_app/*', serveStatic({ root: '../../client/build' }))
-app.use('/favicon.png', serveStatic({ path: '../../client/build/client/favicon.png' }))
 app.on(['POST', 'GET'], '/api/auth/*', (c) => auth.handler(c.req.raw))
+app.doc('/doc', {
+  openapi: '3.0.0',
+  info: {
+    version: '1.0.0',
+    title: 'Moje Shopping API',
+  },
+})
+
 
 //! Workers init
 import './jobs/workers/index.ts'
@@ -39,19 +46,17 @@ import './jobs/workers/index.ts'
 
 // !Api Routes
 const routes = app
-  // .get('/', (c: Context) => {
-  //   return c.text('Hello from LazyHunter API.')
-  // })
+  .get('/', (c) => {
+    return c.text('Hello from LazyHunter API.')
+  })
   .route('/api', leafletsProducts_Route)
   .route('/api', leafletsService_Route)
   .route('/api/list', list_Route)
+  .get('/scalar', Scalar({ url: '/doc' }) as any)
 
 export type AppType = typeof routes
-
-// export default {
-//   port: process.env.PORT || 3000,
-//   fetch: app.fetch,
-//   idleTimeout: 255,
-// }
-
-export default app
+export default {
+  port: process.env.PORT || 3000,
+  fetch: app.fetch,
+  idleTimeout: 255,
+}

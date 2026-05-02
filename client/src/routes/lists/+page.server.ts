@@ -1,61 +1,49 @@
-import { PUBLIC_API_URL } from '$env/static/public';
-import { error, fail, redirect, type Actions } from '@sveltejs/kit';
+import { error as svelteError, fail, redirect, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import type { ListResponse } from '$lib/api';
+import { openapi } from '$lib/api/openapiClient';
 
-export const load = (async ({ fetch, request }) => {
-	const res = await fetch(`${PUBLIC_API_URL}/api/list/all`, {
-		method: 'GET',
+export const load = (async ({ request }) => {
+	const { data, error, response } = await openapi.GET('/api/list/all', {
 		headers: {
-			'Content-Type': 'application/json',
 			Cookie: request.headers.get('cookie') ?? ''
 		}
 	});
-	let result;
-	try {
-		result = await res.json();
-	} catch (e) {
-		throw error(500, 'Server vrátil neplatný formát dát');
-	}
-	if (res.status === 401) {
-		redirect(302, '/user');
-	}
-	if (!res.ok) {
-		throw error(res.status, result.message || 'Nepodarilo sa načítať zoznamy');
+	if (error) {
+		if (response.status === 401) {
+			redirect(302, '/user');
+		}
+		throw svelteError(response.status, {
+			message: error.error + `(${error.details})` || 'Nepodarilo sa načítať zoznamy'
+		});
 	}
 
-	if (!result.ok) {
-		throw error(res.status, result.error);
-	}
-
-	return { lists: result as ListResponse };
+	return { lists: data };
 }) satisfies PageServerLoad;
 
 // Actions
 export const actions = {
 	removeProduct: async ({ request, fetch }) => {
 		const formData = await request.formData();
-		const productId = formData.get('productId');
-		console.log(productId);
+		const productId = String(formData.get('productId'));
+
 		if (!productId) {
 			return fail(400, { message: 'Chýba ID produktu' });
 		}
-		try {
-			const res = await fetch(`${PUBLIC_API_URL}/api/list/remove/${productId}`, {
-				method: 'DELETE',
-				headers: {
-					Cookie: request.headers.get('cookie') ?? '',
-					'Cache-Control': 'no-cache'
-				},
-				body: JSON.stringify({ productId })
-			});
-			if (!res.ok) {
-				return { success: false, message: 'Nepodarilo sa vymazať produkt' };
+		const { data, error, response } = await openapi.DELETE('/api/list/remove/{id}', {
+			params: {
+				path: {
+					id: productId
+				}
+			},
+			headers: {
+				Cookie: request.headers.get('cookie') ?? ''
 			}
-			return { success: true };
-		} catch (error) {
-			console.error('Chyba pri volani servera', error);
-			return fail(500, { message: 'Interná chyba pri spojení so serverom.' });
+		});
+		if (error) {
+			return fail(response.status, {
+				message: error.error + ` (${error.details})` || 'Server vrátil chybu.'
+			});
 		}
+		return { success: true, message: data.message || 'Úspešne vymazaný! 🚀' };
 	}
 } satisfies Actions;

@@ -30,7 +30,7 @@
 	<footer class="mx-auto mt-36 max-w-[1600px] lg:mt-72">
 		<Separator class="mx-auto max-w-[80%]" />
 		<div class="p-24">
-			<p class="text-center">Footer text</p>
+			<p class="text-center"></p>
 		</div>
 	</footer>
 </main>

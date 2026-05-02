@@ -1,99 +1,94 @@
-import { api } from '$lib/api';
-import { fail, type Actions } from '@sveltejs/kit';
+import { fail, redirect, error as svelteError, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { PUBLIC_API_URL } from '$env/static/public';
-import type { ListType } from '../../../../../server/src/schemas/schemaList';
+import { openapi } from '$lib/api/openapiClient';
 
 export const load = (async ({ url, params }) => {
 	let store;
 	if (params.shop !== 'all') {
-		store = params.shop.toUpperCase();
+		store = params.shop.toUpperCase() as any;
 	}
 
 	const pageStr = url.searchParams.get('page') || '1';
 	const searchStr = url.searchParams.get('search') || '';
 
-	try {
-		const response = await api.api.products.$get({
+	const { data, error, response } = await openapi.GET('/api/products', {
+		params: {
 			query: { store: store, page: pageStr, search: searchStr }
-		});
-		const result = await response.json();
+		}
+	});
 
-		return { productsResponse: result, searchQuery: searchStr };
-	} catch (error) {
-		console.log('Chyba pri nacitavani produktov', error);
-		return {
-			productsResponse: {
-				ok: false as const,
-				error: `Problém s API: ${error}`
-			}
-		};
+	if (error) {
+		console.log(error.error + error.details);
+		throw svelteError(response.status, {
+			message: error.error + `(${error.details})` || 'Nepodarilo sa načítať produkty'
+		});
 	}
+
+	return { productsResponse: data, searchQuery: searchStr };
 }) satisfies PageServerLoad;
 
 export const actions = {
-	addToList: async ({ request, fetch: svelteFetch }) => {
+	addToList: async ({ request }) => {
 		const formData = await request.formData();
 		const productId = Number(formData.get('productId'));
-		const listType = String(formData.get('listType')) as ListType;
+		const listType = String(formData.get('listType')) as any;
 
 		if (!productId || !listType) {
 			return fail(400, { message: 'Chýba ID produktu alebo typ zoznamu.' });
 		}
 
-		try {
-			const res = await svelteFetch(`${PUBLIC_API_URL}/api/list/add`, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					Cookie: request.headers.get('cookie') ?? ''
-				},
-				body: JSON.stringify({ productId, listType })
-			});
-
-			if (!res.ok) {
-				return fail(res.status, { message: 'Nepodarilo sa pridať položku do zoznamu.' });
+		const { data, error, response } = await openapi.POST('/api/list/add', {
+			body: {
+				productId,
+				listType
+			},
+			headers: {
+				Cookie: request.headers.get('cookie') ?? ''
 			}
+		});
 
-			const resultData = await res.json();
-			return {
-				success: true,
-				message: 'Úspešne pridané! 🚀',
-				item: resultData.data
-			};
-		} catch (error) {
-			console.error('Chyba pri volani servera', error);
-			return fail(500, { message: 'Interná chyba pri spojení so serverom.' });
+		if (error) {
+			if (response.status === 401) {
+				redirect(302, '/user');
+			}
+			return fail(response.status, {
+				message: error.error || 'Server vrátil chybu.'
+			});
 		}
+		return {
+			success: true,
+			message: data.message || 'Úspešne pridané! 🚀',
+			item: data.data
+		};
 	},
-	removeProduct: async ({ request, fetch }) => {
+
+	removeProduct: async ({ request }) => {
 		const formData = await request.formData();
-		const productId = formData.get('productId');
+		const productId = String(formData.get('productId'));
 
 		if (!productId) {
 			return fail(400, { message: 'Chýba ID produktu' });
 		}
-		try {
-			const res = await fetch(`${PUBLIC_API_URL}/api/list/remove/${productId}`, {
-				method: 'DELETE',
-				headers: {
-					Cookie: request.headers.get('cookie') ?? '',
-					'Cache-Control': 'no-cache'
-				},
-				body: JSON.stringify({ productId })
-			});
 
-			if (!res.ok) {
-				return { success: false, message: 'Nepodarilo sa vymazať produkt' };
+		const { data, error, response } = await openapi.DELETE('/api/list/remove/{id}', {
+			params: {
+				path: {
+					id: productId
+				}
+			},
+			headers: {
+				Cookie: request.headers.get('cookie') ?? ''
 			}
-			return {
-				success: true,
-				removed: true,
-				message: 'Produkt bol úspešne vymazaný zo zoznamu.🧹'
-			};
-		} catch (error) {
-			console.error('Chyba pri volani servera', error);
-			return fail(500, { message: 'Interná chyba pri spojení so serverom.' });
+		});
+
+		if (error) {
+			return fail(response.status, {
+				message: error.error + `${error.details}` || 'Server vrátil chybu.'
+			});
 		}
+		return {
+			success: true,
+			message: data.message || 'Úspešne vymazaný! 🚀'
+		};
 	}
 } satisfies Actions;
