@@ -19,7 +19,7 @@ app.use(
     console.log(new Date().getHours() + ':' + new Date().getMinutes() + ':' + new Date().getSeconds(), str)
   }),
 )
-app.use('/uploads/*', serveStatic({ root: './public', rewriteRequestPath: (path) => path }))
+app.use('/uploads/*', serveStatic({ root: 'public', rewriteRequestPath: (path) => path }))
 app.use(
   cors({
     origin: [process.env.CLIENT_URL || 'http://localhost:5173'],
@@ -36,7 +36,6 @@ app.doc('/doc', {
     title: 'Moje Shopping API',
   },
 })
-
 
 //! Workers init
 import './jobs/workers/index.ts'
