@@ -1,7 +1,3 @@
-import type { Session } from 'better-auth';
-
-type User = NonNullable<Session>;
-
 class OpenListManager {
 	activeId = $state<number | null>(null);
 
@@ -34,9 +30,9 @@ class ProductsListsStore {
 }
 
 class UserProfileStore {
-	user = $state<User | null>(null);
+	user = $state<any | null>(null);
 
-	setUser(userUpdate: User | null | undefined) {
+	setUser(userUpdate: any | null | undefined) {
 		if (userUpdate === undefined) {
 			this.user = null;
 		} else {

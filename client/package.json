@@ -1,5 +1,5 @@
 {
-	"name": "@lazyhunter/client",
+	"name": "client",
 	"private": true,
 	"version": "0.0.1",
 	"type": "module",
@@ -45,7 +45,6 @@
 		"vite": "^7.3.1"
 	},
 	"dependencies": {
-		"@lazyhunter/server": "workspace:*",
 		"better-auth": "^1.5.6",
 		"hono": "4.12.3",
 		"openapi-fetch": "^0.17.0",
