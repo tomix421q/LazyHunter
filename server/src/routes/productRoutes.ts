@@ -1,10 +1,8 @@
-import { leafletsController } from '../controllers/leafletsController'
 import { productsController } from '../controllers/productController'
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi'
 import { ProductListResponseSchema, ProductQuerySchema } from '../schemas/productSchemas'
 import { SHOPNAME } from '../../prisma/generated/prisma/enums'
 import { ErrorResponseSchema } from '../schemas/globalSchema'
-import { SHOPNAMESchema } from '../../prisma/generated/zod'
 
 const leafletsProducts_Route = new OpenAPIHono()
 
