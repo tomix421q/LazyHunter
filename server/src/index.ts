@@ -31,7 +31,7 @@ app.use(
   }),
 )
 app.on(['POST', 'GET'], '/api/auth/*', (c: any) => auth.handler(c.req.raw))
-app.doc('/doc', {
+api.doc('/doc', {
   openapi: '3.0.0',
   info: {
     version: '1.0.0',
