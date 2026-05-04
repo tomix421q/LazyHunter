@@ -13,15 +13,15 @@ const app = new Hono()
 const api = new OpenAPIHono()
 
 //! Middleware
-app.use('/uploads/*', serveStatic({ root: './public', rewriteRequestPath: (path) => path }))
-app.use(
-  '*',
-  logger((str) => {
-    if (str.includes('/uploads/')) return
-    if (str.includes('/api/auth/get-session')) return
-    console.log(new Date().getHours() + ':' + new Date().getMinutes() + ':' + new Date().getSeconds(), str)
-  }),
-)
+
+// app.use(
+//   '*',
+//   logger((str) => {
+//     if (str.includes('/uploads/')) return
+//     if (str.includes('/api/auth/get-session')) return
+//     console.log(new Date().getHours() + ':' + new Date().getMinutes() + ':' + new Date().getSeconds(), str)
+//   }),
+// )
 app.use(
   cors({
     origin: [process.env.CLIENT_URL || 'http://localhost:5173'],
@@ -30,6 +30,7 @@ app.use(
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   }),
 )
+app.use('/uploads/*', serveStatic({ root: './public', rewriteRequestPath: (path) => path }))
 app.on(['POST', 'GET'], '/api/auth/*', (c: any) => auth.handler(c.req.raw))
 api.doc('/doc', {
   openapi: '3.0.0',
