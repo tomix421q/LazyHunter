@@ -54,6 +54,7 @@ const routes = api
   .route('/api', leafletsProducts_Route)
   .route('/api', leafletsService_Route)
   .route('/api/list', list_Route)
+app.route('/', api)
 app.get('/scalar', Scalar({ url: '/doc' }))
 
 export type AppType = typeof routes
