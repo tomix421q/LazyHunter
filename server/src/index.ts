@@ -19,9 +19,8 @@ app.use(
     console.log(new Date().getHours() + ':' + new Date().getMinutes() + ':' + new Date().getSeconds(), str)
   }),
 )
-const isProd = process.env.NODE_ENV === 'production'
-const staticRoot = isProd ? '/app/public' : './public'
-app.use('/uploads/*', serveStatic({ root: staticRoot, rewriteRequestPath: (path) => path }))
+
+app.use('/uploads/*', serveStatic({ root: './public', rewriteRequestPath: (path) => path }))
 app.use(
   cors({
     origin: [process.env.CLIENT_URL || 'http://localhost:5173'],
