@@ -20,6 +20,12 @@ export const auth = betterAuth({
     crossSubDomainCookies: {
       enabled: true,
     },
+    defaultCookieAttributes: {
+      domain: process.env.NODE_ENV === 'production' ? '.lazyhunter.eu' : undefined,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+    },
   },
 
   emailAndPassword: {
