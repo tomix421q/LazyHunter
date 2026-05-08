@@ -24,7 +24,7 @@ app.use(
 )
 app.use(
   cors({
-    origin: [process.env.CLIENT_URL || 'http://localhost:5173'],
+    origin: [(process.env.CLIENT_URL && 'https://www.lazyhunter.eu' && 'https://lazyhunter.eu') || 'http://localhost:5173'],
     credentials: true,
     allowHeaders: ['Content-Type', 'Authorization'],
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
