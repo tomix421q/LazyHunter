@@ -18,7 +18,7 @@
 		} else {
 			newUrl.searchParams.delete('search');
 		}
-		console.log(pathName);
+		// console.log(pathName);
 		if (pathName === undefined && value === '') {
 			goto('/');
 		} else {

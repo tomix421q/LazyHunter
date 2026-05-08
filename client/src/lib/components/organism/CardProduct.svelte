@@ -132,6 +132,7 @@
 			src={productImage}
 			alt={item.productName}
 			onerror={handleImageError}
+			loading="lazy"
 			class=" h-full w-full rounded-sm object-contain drop-shadow-2xl"
 		/>
 	</div>

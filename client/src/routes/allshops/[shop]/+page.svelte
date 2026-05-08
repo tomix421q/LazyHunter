@@ -4,7 +4,7 @@
 	import type { PageData } from './$types';
 	import { page } from '$app/state';
 	import Separator from '$lib/components/ui/separator/separator.svelte';
-	import { Frown } from '@lucide/svelte';
+	import { Frown, Loader, Loader2, Loader2Icon } from '@lucide/svelte';
 	import { listProductStore } from '$lib/store.svelte';
 	import type { ListType } from '$lib/utils/types';
 
@@ -74,6 +74,11 @@
 				</p>
 			</div>
 		{:else}
+			{#if !products.data}
+				<div class="my-12">
+					<Loader class="mx-auto size-16 animate-spin" />
+				</div>
+			{/if}
 			<section
 				class="mx-auto grid grid-cols-1 gap-6 sm:grid-cols-[repeat(auto-fill,minmax(min(450px,100%),1fr))] sm:gap-8"
 			>

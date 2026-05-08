@@ -11,7 +11,7 @@ export const load = (async ({ url, params }) => {
 	const pageStr = url.searchParams.get('page') || '1';
 	const searchStr = url.searchParams.get('search') || '';
 
-	const { data, error, response } = await openapi.GET('/api/products', {
+	const { data, error, response} = await openapi.GET('/api/products', {
 		params: {
 			query: { store: store, page: pageStr, search: searchStr }
 		}

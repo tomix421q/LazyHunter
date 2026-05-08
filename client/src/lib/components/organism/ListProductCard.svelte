@@ -65,6 +65,7 @@
 			<img
 				src={productImage}
 				alt={product.savedName}
+				loading="lazy"
 				onerror={handleImageError}
 				class="h-[120px] max-w-[99px] rounded-sm object-contain drop-shadow-2xl"
 			/>
