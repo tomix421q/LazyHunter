@@ -100,7 +100,7 @@
 					{/if}
 				</span>
 			</Button>
-			<Button
+			<!-- <Button
 				onclick={loginWithFacebook}
 				disabled={isLoading}
 				class="relative mx-auto mt-4 flex min-w-[280px] justify-between gap-8 overflow-hidden border border-blue-400 bg-blue-200/30 py-6 hover:bg-blue-400/20"
@@ -116,7 +116,7 @@
 						Prihlasit sa cez Facebook
 					{/if}
 				</span>
-			</Button>
+			</Button> -->
 			<LogIn class="mx-auto mt-2 size-48 stroke-green-500 opacity-10" />
 		</div>
 	{/if}
