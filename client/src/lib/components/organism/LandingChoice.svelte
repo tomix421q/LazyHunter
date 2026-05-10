@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { page } from '$app/state';
+	import { navigating, page } from '$app/state';
 	import { Search, X } from '@lucide/svelte';
 	import Button from '../ui/button/button.svelte';
 	import Input from '../ui/input/input.svelte';
@@ -14,7 +14,7 @@
 	function updateSearch(value: string) {
 		const newUrl = new URL(page.url);
 		if (value) {
-			newUrl.searchParams.set('search', searchValue);
+			newUrl.searchParams.set('search', value);
 		} else {
 			newUrl.searchParams.delete('search');
 		}
@@ -41,7 +41,7 @@
 	const imgCard_style =
 		'size-[80px] bg-gray-100 object-contain duration-100 ease-out hover:scale-[110%] hover:shadow-lg lg:size-[120px] rounded-lg';
 
-	// $inspect();
+	// $inspect(isNavigating);
 </script>
 
 <main class="relative mt-4 mb-8 flex flex-col items-center p-1 px-2 lg:mt-10 lg:p-8">
@@ -133,7 +133,7 @@
 {/snippet}
 
 <svelte:window
-	on:keydown={(e) => {
+	onkeydown={(e) => {
 		e.key === 'Escape' && cleanSearch();
 	}}
 />

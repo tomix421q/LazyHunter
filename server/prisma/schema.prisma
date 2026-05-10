@@ -105,6 +105,8 @@ model ProductPrice {
   moreInfo           String?
   UserListItem       UserListItem[]
   createdAt          DateTime @default(now())
+
+  @@index([storeName])
 }
 
 model LeafletsDate {

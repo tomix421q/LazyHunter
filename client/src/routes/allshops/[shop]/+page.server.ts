@@ -3,7 +3,7 @@ import type { PageServerLoad } from './$types';
 import { openapi } from '$lib/api/openapiClient';
 
 export const load = (async ({ url, params }) => {
-	let store;
+	let store: any;
 	if (params.shop !== 'all') {
 		store = params.shop.toUpperCase() as any;
 	}
@@ -11,20 +11,43 @@ export const load = (async ({ url, params }) => {
 	const pageStr = url.searchParams.get('page') || '1';
 	const searchStr = url.searchParams.get('search') || '';
 
-	const { data, error, response} = await openapi.GET('/api/products', {
-		params: {
-			query: { store: store, page: pageStr, search: searchStr }
+	// const productsPromise = openapi
+	// 	.GET('/api/products', {
+	// 		params: {
+	// 			query: { store: store, page: pageStr, search: searchStr }
+	// 		}
+	// 	})
+	// 	.then(async ({ data, error, response }) => {
+	// 		// await new Promise((resolve) => setTimeout(resolve, 2000));
+	// 		if (error) {
+	// 			console.log(error.error + error.details);
+	// 			throw svelteError(response.status, {
+	// 				message: error.error + `(${error.details})` || 'Nepodarilo sa načítať produkty'
+	// 			});
+	// 		}
+	// 		return data;
+	// 	});
+
+	const fetchProducts = async () => {
+		try {
+			const { data, error, response } = await openapi.GET('/api/products', {
+				params: {
+					query: { store: store, page: pageStr, search: searchStr }
+				}
+			});
+			await new Promise((resolve) => setTimeout(resolve, 2000));
+			if (error) {
+				throw svelteError(response.status, { message: error.error });
+			}
+			return data;
+		} catch (err) {
+			// Zachytenie chyby (napr. ak úplne spadne sieť)
+			console.error('Chyba:', err);
+			throw err;
 		}
-	});
+	};
 
-	if (error) {
-		console.log(error.error + error.details);
-		throw svelteError(response.status, {
-			message: error.error + `(${error.details})` || 'Nepodarilo sa načítať produkty'
-		});
-	}
-
-	return { productsResponse: data, searchQuery: searchStr };
+	return { searchQuery: searchStr, productsPromise: { products: fetchProducts() } };
 }) satisfies PageServerLoad;
 
 export const actions = {
