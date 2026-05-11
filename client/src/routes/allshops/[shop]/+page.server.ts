@@ -2,8 +2,12 @@ import { fail, redirect, error as svelteError, type Actions } from '@sveltejs/ki
 import type { PageServerLoad } from './$types';
 import { openapi } from '$lib/api/openapiClient';
 
-export const load = (async ({ url, params }) => {
+export const load = (async ({ url, params, setHeaders }) => {
 	let store: any;
+	setHeaders({
+		'cache-control': 'public, s-maxage=1, stale-while-revalidate=59'
+	});
+
 	if (params.shop !== 'all') {
 		store = params.shop.toUpperCase() as any;
 	}

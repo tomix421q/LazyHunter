@@ -7,7 +7,7 @@
 	import { toast } from 'svelte-sonner';
 	import type { ListItemInfo } from '../../../routes/allshops/[shop]/+page.svelte';
 	import { authClient } from '$lib/auth-client';
-	import { goto } from '$app/navigation';
+	import { goto, invalidate } from '$app/navigation';
 	import type { components } from '$lib/api/apiSchema';
 	import type { ListType } from '$lib/utils/types';
 	import { Heart, Loader } from '@lucide/svelte';
@@ -74,6 +74,7 @@
 				if (result.type === 'success') {
 					menuManager.closeAll();
 					toast(result.data?.message as string);
+					await invalidate('app:user-lists');
 					// console.log(result.data?.message);
 				} else if (result.type === 'failure') {
 					if (result.status === 409) {

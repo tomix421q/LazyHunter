@@ -54,7 +54,7 @@
 		{#await data.productsPromise.products}
 			<div class="my-22 text-center *:text-muted-foreground">
 				<Loader class="mx-auto size-10 animate-spin" />
-				<p class="text-sm md:text-lg">Hladam produkty</p>
+				<p class="text-sm md:text-lg">Hľadám Produkty</p>
 			</div>
 		{:then products}
 			<!-- total -->
@@ -96,5 +96,5 @@
 			</p>
 		{/await}
 	</article>
-	<Separator class="mb-10" />
+	
 </main>

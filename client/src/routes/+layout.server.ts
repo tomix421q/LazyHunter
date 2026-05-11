@@ -3,7 +3,9 @@ import { PUBLIC_API_URL } from '$env/static/public';
 import { openapi } from '$lib/api/openapiClient';
 import { error as svelteError } from '@sveltejs/kit';
 
-export const load = (async ({ request, fetch }) => {
+export const load = (async ({ request, fetch, depends }) => {
+	depends('app:user-lists');
+
 	const { data, error } = await openapi.GET('/api/availablestores');
 	if (error) {
 		console.log(error.error + error.details);
