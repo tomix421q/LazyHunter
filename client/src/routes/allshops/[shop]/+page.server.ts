@@ -35,7 +35,7 @@ export const load = (async ({ url, params }) => {
 					query: { store: store, page: pageStr, search: searchStr }
 				}
 			});
-			await new Promise((resolve) => setTimeout(resolve, 2000));
+			// await new Promise((resolve) => setTimeout(resolve, 2000));
 			if (error) {
 				throw svelteError(response.status, { message: error.error });
 			}
