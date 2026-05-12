@@ -116,7 +116,8 @@
 			disabled={isSaving}
 		>
 			{#if isSaving}
-				<Loader />
+				<!-- <Loader class="animate-spin" /> -->
+				<Heart class="stroke-destructive" />
 			{:else if shoppingListData?.id}
 				<Heart class="fill-destructive stroke-destructive" />
 			{:else}

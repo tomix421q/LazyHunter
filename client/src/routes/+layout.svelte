@@ -27,17 +27,17 @@
 		{@render children()}
 	</section>
 
-	<footer class="mx-auto mt-36 max-w-[1600px] lg:mt-72">
+	<footer class="relative mx-auto mt-44 lg:mt-72">
 		<Separator class="mx-auto max-w-[80%]" />
 
 		<!-- down -->
 		<div
-			class="absolute flex w-full justify-between px-2 pt-24 *:text-[9px] *:text-muted-foreground md:*:text-[11px]"
+			class="absolute flex w-full justify-between bg-linear-to-b from-background via-gray-200 to-gray-300 p-2 pt-44 *:text-[9px] *:text-muted-foreground md:*:text-[11px]"
 		>
 			<span class="">Version 1.3</span>
 			<p class="">
 				&copy; {currentYear} Created by
-				<a href="https://zilka-tomas.com" target="_blank" class="underline hover:text-black"
+				<a href="https://www.zilka-tomas.com/" target="_blank" class="underline hover:text-black"
 					>wwww.zilka-tomas.com</a
 				>
 			</p>
